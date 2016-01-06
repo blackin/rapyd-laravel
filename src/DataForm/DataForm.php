@@ -372,6 +372,7 @@ class DataForm extends Widget
 
     protected function process()
     {
+        $x = 1;
         //database save
         switch ($this->action) {
             case "update":
