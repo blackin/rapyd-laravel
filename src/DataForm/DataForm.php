@@ -372,7 +372,6 @@ class DataForm extends Widget
 
     protected function process()
     {
-        $x = 1;
         //database save
         switch ($this->action) {
             case "update":
@@ -388,6 +387,15 @@ class DataForm extends Widget
                 } else {
                     $this->process_status = "success";
                 }
+
+                //preProcess
+                foreach( $this->fields as $field ) {
+                    //Pre-processor
+                    if( is_a($field->pre_processor, 'Closure') ) {
+                        $field->new_value = $field->pre_processor->__invoke( $field->new_value, $this->fields );
+                    }
+                }
+
                 foreach ($this->fields as $field) {
                     $field->action = $this->action;
                     $result = $field->autoUpdate();

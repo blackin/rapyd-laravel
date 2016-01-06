@@ -84,6 +84,13 @@ abstract class Field extends Widget
     public $star = '';
     public $req = '';
 
+    /**
+     * Function to alter the value before saving (used on insert/update)
+     * Signature ($value, $model)
+     * @var Closure
+     */
+    public $pre_processor = null;
+
     public function __construct($name, $label, &$model = null, &$model_relations = null)
     {
         parent::__construct();
@@ -365,9 +372,14 @@ abstract class Field extends Widget
         $this->getMode();
     }
 
-    public function getNewValue()
+    public function getNewValue( $forceProcess = false )
     {
-        $process = (Input::get('search') || Input::get('save')) ? true : false;
+        $process = (Input::get('search') || Input::get('save') || $forceProcess) ? true : false;
+
+        //Return if the field has a pre_processor closure set
+        if( is_a($this->pre_processor,'Closure') ) {
+            return;
+        }
 
         if ($process && Input::exists($this->name)) {
             if ($this->status == "create") {
@@ -500,7 +512,7 @@ abstract class Field extends Widget
         $this->getValue();
         $this->getNewValue();
         if (!$this->editable()) return true;
-        
+
         if (is_object($this->model) && isset($this->db_name)) {
             if (
                 !(Schema::connection($this->model->getConnectionName())->hasColumn($this->model->getTable(), $this->db_name)
@@ -682,4 +694,11 @@ abstract class Field extends Widget
 
         return $output;
     }
+
+    public function pre_processor($closure)
+    {
+        $this->pre_processor = $closure;
+        return $this;
+    }
+
 }
