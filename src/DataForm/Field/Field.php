@@ -38,7 +38,7 @@ abstract class Field extends Widget
     public $style;
     //datafilter related
     public $operator = "=";
-    public $clause = "like";
+    public $clause = "ilike";
     public $orvalue = "";
     //field actions & field status
     public $mode = 'editable'; //editable, readonly, autohide
@@ -52,6 +52,7 @@ abstract class Field extends Widget
     public $show_value = null; //default value in visualization
     public $edited = false;
     public $options = array();
+    public $empty_option_value = null;
     public $mask = null;
     public $group;
     public $value = null;
@@ -101,10 +102,6 @@ abstract class Field extends Widget
 
         $this->setName($name);
         $this->label = $label;
-
-        if( config('database.default') == 'pgsql' ) {
-            $this->clause('ilike');
-        }
     }
 
     /**
@@ -481,7 +478,12 @@ abstract class Field extends Widget
         if (is_array($options)) {
             $this->options += $options;
         }
-        else {
+        elseif( is_a($options, \Closure::class))
+        {
+            $this->options += $options->__invoke();
+        }
+        else
+        {
             $this->options += $options->all();
         }
 
@@ -492,6 +494,13 @@ abstract class Field extends Widget
     {
         $this->options[$value] = $description;
 
+        return $this;
+    }
+
+    public function empty_option($value = -1, $description = 'Alege..')
+    {
+        $this->empty_option_value = $value;
+        $this->option( $value, $description );
         return $this;
     }
 
