@@ -87,10 +87,10 @@ abstract class Field extends Widget
 
     /**
      * Function to alter the value before saving (used on insert/update)
-     * Signature ($value, $model)
+     * Signature ($value, $fields, $model)
      * @var Closure
      */
-    public $pre_processor = null;
+    public $pre_save_processor = null;
 
     public function __construct($name, $label, &$model = null, &$model_relations = null)
     {
@@ -378,7 +378,7 @@ abstract class Field extends Widget
         $process = (Input::get('search') || Input::get('save') || $forceProcess) ? true : false;
 
         //Return if the field has a pre_processor closure set
-        if( is_a($this->pre_processor,'Closure') ) {
+        if( is_a($this->pre_save_processor,'Closure') ) {
             return;
         }
 
@@ -708,9 +708,9 @@ abstract class Field extends Widget
         return $output;
     }
 
-    public function pre_processor($closure)
+    public function pre_save_processor($closure)
     {
-        $this->pre_processor = $closure;
+        $this->pre_save_processor = $closure;
         return $this;
     }
 

@@ -391,8 +391,8 @@ class DataForm extends Widget
                 //preProcess
                 foreach( $this->fields as $field ) {
                     //Pre-processor
-                    if( is_a($field->pre_processor, 'Closure') ) {
-                        $field->new_value = $field->pre_processor->__invoke( $field->new_value, $this->fields );
+                    if( is_a($field->pre_save_processor, 'Closure') ) {
+                        $field->new_value = $field->pre_save_processor->__invoke( $field->new_value, $this->fields, $this->model );
                     }
                 }
 
@@ -509,7 +509,7 @@ class DataForm extends Widget
             } elseif ($result && is_a($result, 'Illuminate\View\View')) {
                 $this->custom_output = $result;
             }
-            
+
             //reprocess if an error is added in closure
             if ($this->process_status == 'error') {
                 $this->process();
@@ -578,7 +578,7 @@ class DataForm extends Widget
     {
         return ($this->custom_output != null) ? true : false;
     }
-    
+
     /**
      * @return string
      */
@@ -659,7 +659,7 @@ class DataForm extends Widget
         $this->has_placeholders = true;
         return $this;
     }
-    
+
     /**
      * Magic method to catch all appends
      *
