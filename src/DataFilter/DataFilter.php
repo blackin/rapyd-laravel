@@ -175,7 +175,9 @@ class DataFilter extends DataForm
                                     });
                                     break;
                                 case "ilike":
-                                    $this->query = $this->query->where($name, 'ILIKE', '%' . $value . '%');
+                                    $this->query = $this->query->whereHas($field->rel_name, function ($q) use ($field, $value) {
+                                        $q->where($field->rel_field, 'ILIKE', '%' . $value . '%');
+                                    });
                                     break;
                                 case "orlike":
                                     $this->query = $this->query->orWhereHas($field->rel_name, function ($q) use ($field, $value) {
@@ -248,8 +250,14 @@ class DataFilter extends DataForm
                                 case "like":
                                     $this->query = $this->query->where($name, 'LIKE', '%' . $value . '%');
                                     break;
+                                case "ilike":
+                                    $this->query = $this->query->where($name, 'ILIKE', '%' . $value . '%');
+                                    break;
                                 case "orlike":
                                     $this->query = $this->query->orWhere($name, 'LIKE', '%' . $value . '%');
+                                    break;
+                                case "orilike":
+                                    $this->query = $this->query->orWhere($name, 'ILIKE', '%' . $value . '%');
                                     break;
                                 case "where":
                                     $this->query = $this->query->where($name, $field->operator, $value);
