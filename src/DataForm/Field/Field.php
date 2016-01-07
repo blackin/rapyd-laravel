@@ -101,6 +101,10 @@ abstract class Field extends Widget
 
         $this->setName($name);
         $this->label = $label;
+
+        if( config('database.default') == 'pgsql' ) {
+            $this->clause('ilike');
+        }
     }
 
     /**
@@ -499,14 +503,14 @@ abstract class Field extends Widget
         return $this;
     }
 
-    public function editable() 
+    public function editable()
     {
         if ($this->mode == 'readonly') {
             return $this->edited;
         }
         return true;
     }
-    
+
     public function autoUpdate($save = false)
     {
         $this->getValue();
@@ -519,7 +523,7 @@ abstract class Field extends Widget
                 || $this->model->hasSetMutator($this->db_name))
                 || is_a($this->relation, 'Illuminate\Database\Eloquent\Relations\Relation')
                 ) {
-                
+
                 $self = $this; //fix old 5.3 you can't pass this in a closure
                 $this->model->saved(function () use ($self) {
                     $self->updateRelations();
@@ -618,7 +622,7 @@ abstract class Field extends Widget
     }
 
     /**
-     * parse blade view passing current model 
+     * parse blade view passing current model
      * @param $view
      * @return string
      */
@@ -626,7 +630,7 @@ abstract class Field extends Widget
     {
         return $this->parseString($view, true);
     }
-    
+
 
     public function build()
     {
