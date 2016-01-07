@@ -92,6 +92,11 @@ abstract class Field extends Widget
      */
     public $pre_save_processor = null;
 
+    /**
+     * @var DataForm
+     */
+    public $form = null;
+
     public function __construct($name, $label, &$model = null, &$model_relations = null)
     {
         parent::__construct();
@@ -288,6 +293,12 @@ abstract class Field extends Widget
         return $this;
     }
 
+    public function form( $form )
+    {
+        $this->form = $form;
+        return $this;
+    }
+
     public function getValue()
     {
         $name = $this->db_name;
@@ -377,10 +388,7 @@ abstract class Field extends Widget
     {
         $process = (Input::get('search') || Input::get('save') || $forceProcess) ? true : false;
 
-        //Return if the field has a pre_processor closure set
-        if( is_a($this->pre_save_processor,'Closure') ) {
-            return;
-        }
+
 
         if ($process && Input::exists($this->name)) {
             if ($this->status == "create") {
@@ -418,6 +426,10 @@ abstract class Field extends Widget
         }
         if ($this->new_value == "") {
             $this->new_value = null;
+        }
+        //Run the pre_save_processor
+        if( is_a($this->pre_save_processor,'Closure') && $this->form ) {
+            $this->new_value = $this->pre_save_processor->__invoke( $this->new_value, $this->form->fields, $this->form->model );
         }
     }
 

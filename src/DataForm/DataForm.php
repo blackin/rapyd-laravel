@@ -129,6 +129,9 @@ class DataForm extends Widget
             $this->multipart = true;
         }
 
+        //Attach the form to the field
+        $field_obj->form = $this;
+
         //default group
         if (isset($this->default_group) && !isset($field_obj->group)) {
             $field_obj->group = $this->default_group;
@@ -389,13 +392,12 @@ class DataForm extends Widget
                 }
 
                 //preProcess
-                foreach( $this->fields as $field ) {
-                    //Pre-processor
-                    if( is_a($field->pre_save_processor, 'Closure') ) {
-                        $field->new_value = $field->pre_save_processor->__invoke( $field->new_value, $this->fields, $this->model );
-                    }
-                }
-
+//                foreach( $this->fields as $field ) {
+//                    //Pre-processor
+//                    if( is_a($field->pre_save_processor, 'Closure') ) {
+//                        $field->new_value = $field->pre_save_processor->__invoke( $field->new_value, $this->fields, $this->model );
+//                    }
+//                }
                 foreach ($this->fields as $field) {
                     $field->action = $this->action;
                     $result = $field->autoUpdate();
